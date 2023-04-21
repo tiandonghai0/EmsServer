@@ -1,0 +1,133 @@
+buildscript {
+    ext {
+        springBootVersion = '2.1.0.RELEASE'
+    }
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/spring' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        mavenCentral()
+        maven { url 'https://repo.spring.io/snapshot' }
+        maven { url 'https://repo.spring.io/milestone' }
+        maven {
+            url "https://repo1.maven.org/maven2"
+        }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+allprojects {
+    apply plugin: 'org.springframework.boot'
+    apply plugin: "java"
+    apply plugin: 'idea'
+    apply plugin: "eclipse"
+    apply plugin: "maven"
+    apply plugin: 'eclipse-wtp'
+    apply plugin: 'io.spring.dependency-management'
+}
+
+configurations {
+    provided
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
+
+bootJar {
+    mainClassName = 'com.shmet.Startup'
+}
+
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/central' }
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    maven { url 'https://maven.aliyun.com/repository/spring' }
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    mavenCentral()
+    maven {
+        url "https://repo1.maven.org/maven2"
+    }
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+}
+
+//ext {
+//    springCloudVersion = 'Greenwich.M1'
+//}
+//dependencyManagement {
+//    imports {
+//        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+//    }
+//}
+
+dependencies {
+    annotationProcessor(
+            'org.projectlombok:lombok'
+    )
+    compile(
+            'org.springframework.boot:spring-boot-starter-web',
+            "org.springframework.boot:spring-boot-starter-amqp",
+            "org.springframework.boot:spring-boot-starter-aop",
+            "org.springframework.boot:spring-boot-starter-activemq",
+            'org.springframework.boot:spring-boot-devtools',
+            'org.springframework.boot:spring-boot-starter-data-redis',
+            'org.springframework.boot:spring-boot-starter-data-mongodb',
+            'org.springframework.boot:spring-boot-starter-mail',
+            "org.springframework.boot:spring-boot-starter-security",
+            'org.webjars:webjars-locator:0.34',
+            'org.apache.commons:commons-pool2:2.6.0',
+            'commons-io:commons-io:2.6',
+            'org.webjars:jquery:3.1.0',
+            'com.ibeetl:beetl-framework-starter:1.1.68.RELEASE',
+            'mysql:mysql-connector-java:5.1.47',
+            'com.zaxxer:HikariCP:3.2.0',
+            'com.hazelcast:hazelcast-all:3.10.5',
+            'io.netty:netty-all:4.1.25.Final',
+            'org.redisson:redisson:3.8.2',
+            'org.quartz-scheduler:quartz:2.2.3',
+            'org.quartz-scheduler:quartz-jobs:2.2.3',
+            'com.alibaba:fastjson:1.2.83',
+            'org.apache.httpcomponents:httpclient:4.5',
+            'com.github.binarywang:wx-java:3.8.0', //微信框架
+            'com.trigersoft:jaque:2.1.2',
+            'org.apache.poi:poi:3.15', //excel 图表处理开始
+            'org.apache.poi:poi-ooxml:3.15',
+            'org.apache.poi:poi-ooxml-schemas:3.15',
+            'org.apache.poi:ooxml-schemas:1.1',
+            'jfree:jcommon:1.0.16',
+            'jfree:jfreechart:1.0.13', //excel 图表处理结束
+            'org.apache.commons:commons-lang3:3.9',
+            'com.auth0:java-jwt:3.10.3',
+            fileTree(dir: 'lib', include: '*.jar'),
+            //Kaptcha 工具包
+            'com.github.penggle:kaptcha:2.3.2',
+            'com.aliyun:dysmsapi20170525:2.0.1',
+            //弘博推送SDK
+            'wisepaas.datahub:edge-sdk:1.0.4',
+            'org.projectlombok:lombok',
+            'com.alibaba:easyexcel:2.2.6',
+            'pull-parser:pull-parser:2.1.10',
+            'cn.hutool:hutool-all:5.7.22'
+    )
+
+    compile project(':emscloud-commons')
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+task copyJars(type: Copy) {
+    from configurations.runtime
+    into 'lib'
+}

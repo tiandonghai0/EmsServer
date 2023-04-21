@@ -1,0 +1,197 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>柏树电力价格周期</title>
+
+    <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+    <script src="${ctxPath}/js/m_index.js"></script>
+    <script src="${ctxPath}/js/m_template.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/css/m_index.css">
+
+    <!-- <link rel="stylesheet" href="m_index.css">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="./m_index.js"></script>
+    <script src="aaa.js"></script> -->
+
+</head>
+
+<body>
+    <div class="main_container">
+        <div class="operator">
+            <span onclick="add_data(true)">新增</span>
+            <span onclick="edit_data()">修改</span>
+            <span onclick="del_data(false)">删除</span>
+        </div>
+        <table id="table_01" class="gridtable">
+            <tr class="tr_header">
+                <td></td>
+                <td id="periodName" class="can_edit" place="请输入周期名字">周期名字</td>
+                <td id="peakPrice" class="can_edit" place="请输入峰时价格">峰时价格</td>
+                <td id="valleyPrice" class="can_edit" place="请输入谷价格">谷价格</td>
+                <td id="flatPrice" class="can_edit" place="请输入平时价格">平时价格</td>
+                <td id="seasonPeriod">季节周期</td>
+                <td id="chargePolicy">收费策略</td>
+            </tr>
+            <tbody id="table_01_tboby">
+
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript">
+
+    var all_data = {};
+
+    var send_url = "${ctxPath}/baishuelectricPricePeriod/update_baishuElectricPricePeriod";//发送
+
+    var get_url = "${ctxPath}/baishuelectricPricePeriod/get_baishuElectricPricePeriod";//获取
+
+    get_remote_data(get_url,all_data);
+
+    // all_data = data.projectConfig;//全局数据；
+
+    set_session("all_data",all_data);
+
+    var data_length = all_data.electricPricePeriod.length;
+
+    console.log(all_data);
+
+    function go_season(obj, indexs) {
+
+        console.log(obj, indexs);
+
+        var data = all_data.electricPricePeriod[indexs][$(obj).attr("this_key")];
+
+        set_session("all_data",all_data)
+
+        set_session("season_data",data)
+
+    }
+
+    function go_charge(obj, indexs) {
+
+        console.log(obj, indexs);
+        var data = all_data.electricPricePeriod[indexs][$(obj).attr("this_key")];
+        set_session("all_data",all_data)
+        set_session("charge_data",data)
+
+    }
+
+    setTimeout(function () {
+        render_page("index", all_data.electricPricePeriod, 100, 100, ["periodName", "peakPrice", "valleyPrice", "flatPrice"]);
+    }, 20)
+
+    var temp_data0 = deepCopyObj(template);//init;
+
+    function btn_confirm(fn, arr) {  //arr  ["indexs","add"]  ["indexs","edit"] ["indexs","delete"] 
+
+
+        var _periodNames = $("#periodNames").find("input").val();
+
+        var _peakPrices = $("#peakPrices").find("input").val();
+
+        var _valleyPrices = $("#valleyPrices").find("input").val();
+
+        var _flatPrices = $("#flatPrices").find("input").val();
+
+        console.log(_periodNames, _peakPrices, _valleyPrices, _flatPrices);
+
+        if (arr[1] == "delete") {
+            all_data.electricPricePeriod.splice(arr[0], 1);
+           
+
+        } else {
+            //判断值的类型是否合法。
+            if (($.trim(_periodNames).length > 0) && (isNumber(+_peakPrices)) && (isNumber(+_valleyPrices)) && (isNumber(+_flatPrices))) {
+                temp_data0.periodName = _periodNames//字符串。
+                temp_data0.peakPrice = +_peakPrices;
+                temp_data0.valleyPrice = +_valleyPrices;
+                temp_data0.flatPrice = +_flatPrices;
+
+                if (arr[1] == "add") { //add 
+                    all_data.electricPricePeriod.push(temp_data0);
+                }
+
+                if (arr[1] == "edit") {
+                    all_data.electricPricePeriod[arr[0]]["periodName"] = _periodNames;
+                    all_data.electricPricePeriod[arr[0]]["peakPrice"] = +_peakPrices;
+                    all_data.electricPricePeriod[arr[0]]["valleyPrice"] = +_valleyPrices;
+                    all_data.electricPricePeriod[arr[0]]["flatPrice"] = +_flatPrices;
+
+                    console.log("all_data", all_data)
+                }
+
+            } else {
+                window.alert("本次输入的值不合法");
+                return ; //不提交；
+            }
+        }
+
+        //var obj = {};
+
+        //obj.projectConfig = all_data;  //是rows 还是 projectConfig?
+
+        if (typeof fn == 'function') {
+            //callback post data to server.
+            try {
+                var is_success = fn(send_url, all_data);
+                console.log('is_success',is_success)
+                if (is_success) {
+                    set_session("all_data", all_data);
+                    render_page("index", all_data.electricPricePeriod, 100, 100, ["periodName", "peakPrice", "valleyPrice", "flatPrice"]);
+                    btn_hidden();
+                    window.alert("数据提交成功");
+                    
+                     window.location.reload();
+                }else{
+                    btn_hidden();
+                    window.alert("数据提交失败");
+                }
+            } catch (e) {
+            	window.location.reload();
+                console.log("提交数据错误", e.toString());
+            }
+
+            window.location.reload();
+
+        }
+
+    }
+
+    $("body").on("click", ".go_detail", function () {
+        var this_id = $(this).attr("id");
+        var indexs = +$(this).attr("indexs");
+        if (this_id.indexOf("go_season") > -1) {
+            go_season($(this).get(0), indexs)
+            setTimeout(function () {
+                // window.location.href = "./season.html?indexs=" + indexs;  //edit;
+                window.location.href = "${ctxPath}/baishuelectricPricePeriod/init_season?indexs=" + indexs;
+            }, 200)
+
+        } else if (this_id.indexOf("go_charge") > -1) {
+            go_charge($(this).get(0), indexs)
+            setTimeout(function () {
+                // window.location.href = "./charge.html?indexs=" + indexs;
+                window.location.href = "${ctxPath}/baishuelectricPricePeriod/init_charge?indexs=" + indexs;
+            }, 200)
+        }
+    });
+
+function edit_data() {
+    var active_tr = $(".can_bg_active");
+    if (active_tr.length < 1) {
+        window.alert("请选择一项")
+        return;
+    }
+    var indexs = active_tr.eq(0).attr("indexs");
+    add_data(true);//弹框。
+    //修改。
+    $("#btn_confirm").attr("onclick", "btn_confirm(post_to_server,[" + indexs + ",'edit'])");
+
+    refill_data(6)
+}
+
+</script>

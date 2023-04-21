@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://172.18.150.250:3306/ems?autoReconnect=true&failOverReadOnly=false&useSSL=false
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: 'jz123$1A'
+    hikari:
+      idle-timeout: 10000
+  application:
+    name: feign-consumer
+  data:
+    mongodb:
+      uri: mongodb://admin:jz123$1@172.18.150.250:27017/ems
+  rabbitmq:
+    host: 172.18.150.249
+    port: 5672
+    username: admin
+    password: 'jz123$1'
+  redis:
+    host: 172.18.150.249
+    port: 6379
+    password: 'jz123$1'
+    timeout: 100000
+    database: 1
+    lettuce:
+      pool:
+        max-active: 1000
+        max-idle: 300
+        min-idle: 0

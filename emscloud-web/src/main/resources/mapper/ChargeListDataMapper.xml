@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shmet.dao.ChargeListDataMapper">
+
+    <!-- 实体类型映射 -->
+    <resultMap type="com.shmet.entity.mysql.gen.ChargeListData" id="baseMap">
+        <result property="id" column="id"/>
+        <result property="projectNo" column="project_no"/>
+        <result property="lineNo" column="line_no"/>
+        <result property="callDate" column="call_date"/>
+        <result property="fengVal" column="feng_val"/>
+        <result property="ping1Val" column="ping1_val"/>
+        <result property="ping2Val" column="ping2_val"/>
+        <result property="guVal" column="gu_val"/>
+        <result property="contractMd" column="contract_md"/>
+        <result property="fengMd" column="feng_md"/>
+        <result property="ping1Md" column="ping1_md"/>
+        <result property="ping2Md" column="ping2_md"/>
+        <result property="guMd" column="gu_md"/>
+        <result property="exceedMd" column="exceed_md"/>
+        <result property="base1Price" column="base1_price"/>
+        <result property="base1Price" column="base2_price"/>
+        <result property="fengPrice" column="feng_price"/>
+        <result property="pingPrice" column="ping_price"/>
+        <result property="guPrice" column="gu_price"/>
+        <result property="sum" column="sum"/>
+    </resultMap>
+
+    <sql id="base_column_sql">
+        id,
+        project_no,
+        line_no,
+        call_date,
+        feng_val,
+        ping1_val,
+        ping2_val,
+        gu_val,
+        contract_md,
+        feng_md,
+        ping1_md,
+        ping1_md,
+        gu_md
+        exceed_md,
+        base1_price,
+        base2_price,
+        feng_price,
+        ping_price,
+        gu_price,
+        sum
+    </sql>
+
+    <select id="listByProjectNoAndCallDate" resultType="com.shmet.vo.ChargeListDataVo">
+        SELECT
+        <include refid="base_column_sql"/>
+        from t_charge_list_data
+        where project_no=#{projectNo} and SUBSTRING_INDEX(call_date,"-",1)=#{callDate}
+        order by call_date , line_no desc
+    </select>
+
+
+</mapper>

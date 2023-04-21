@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shmet.dao.AppUserMapper">
+    <!-- 实体类型映射 -->
+    <resultMap type="com.shmet.entity.mysql.gen.AppUser" id="baseMap">
+        <result property="id" column="id"/>
+        <result property="phone" column="phone"/>
+        <result property="password" column="password"/>
+        <result property="account" column="account"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="base_column_sql">
+        id,
+        phone,
+        password,
+        account,
+        create_time
+    </sql>
+    <!--查询appuser-->
+    <select id="queryAppUserExists" resultType="com.shmet.entity.mysql.gen.AppUser">
+        <!--查询是否存在超级管理员-->
+        select *
+        from t_app_user
+        where phone=#{phone} and password=#{password}
+    </select>
+
+</mapper>

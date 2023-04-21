@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+//生成的数据访问类的类名  
+option java_outer_classname = "LoginProto";
+
+message ProtoLoginInfo {  
+    string uname = 1;
+    string pwd = 2;
+    string acconeId = 3;
+    repeated string deviceModel = 4;
+	repeated bytes tagCodeCsv = 5;
+}

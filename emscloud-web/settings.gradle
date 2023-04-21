@@ -1,0 +1,3 @@
+rootProject.name = 'emscloud-web'
+
+includeFlat 'emscloud-commons'

@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://127.0.0.1:3306/ems_test?autoReconnect=true&failOverReadOnly=false&useSSL=false
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: '!qaz2wsx'
+    hikari:
+      idle-timeout: 10000
+  data:
+    mongodb:
+      uri: mongodb://ems:!qaz2wsx@127.0.0.1:27018/ems_test
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: ems
+    password: '!qaz2wsx'
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: '!qaz2wsx'
+    timeout: 100000
+    database: 1
+    lettuce:
+      pool:
+        max-active: 1000
+        max-idle: 300
+        min-idle: 0

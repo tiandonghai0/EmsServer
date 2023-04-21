@@ -1,0 +1,4 @@
+# Login.options
+ProtoLoginInfo.uname   max_size:20
+ProtoLoginInfo.pwd   max_size:12
+ProtoLoginInfo.acconeId   max_size:10

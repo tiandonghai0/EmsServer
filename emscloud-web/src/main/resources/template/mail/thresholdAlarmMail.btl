@@ -1,0 +1,19 @@
+<html>
+<head>
+<title>${title}</title>
+<b>${contactName}</b>,您好：
+<br>
+以下设备发生阈值报警，请立即检查！<br>
+项目名：<b>${projectName}</b>, 设备ID：<b>${deviceId}</b>, 设备名：<b>${deviceName}</b><br>
+点位名：<b>${tagName}</b>, 阈值：<b>${thresholdValue}</b>, 实时值：<b>${value}</b><br>
+采集时间：<b>${timestamp}</b>
+<br>
+<br>
+上海聚震能源科技有限公司
+<br>
+<% var date = date(); %>
+${date,dateFormat="yyyy年MM月dd日"}
+</head>
+<body>
+</body>
+</html>

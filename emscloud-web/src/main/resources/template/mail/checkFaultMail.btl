@@ -1,0 +1,19 @@
+<html>
+<head>
+<title>${title}</title>
+<b>${contactName}</b>,您好：
+<br>
+项目名：<b>${projectName}</b><br>
+以下设备发生报警，请立即检查！<br>
+设备编号：<b>${deviceNo}</b>, 设备名称：<b>${deviceName}</b>,<br>
+点位名：<b>${tagCode}</b>, 点位名称：<b>${tagName}</b>, 
+<br>
+<br>
+聚震能源科技有限公司
+<br>
+<% var date = date(); %>
+${date,dateFormat="yyyy年MM月dd日"}
+</head>
+<body>
+</body>
+</html>

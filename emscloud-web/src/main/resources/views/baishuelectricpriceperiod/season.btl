@@ -1,0 +1,167 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>柏树电力价格周期</title>
+
+    <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+    <script src="${ctxPath}/js/m_index.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/css/m_index.css">
+
+    <!-- <link rel="stylesheet" href="m_index.css">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="./m_index.js"></script>
+    <script src="aaa.js"></script> -->
+    
+</head>
+
+<body>
+    <div class="main_container">
+        <div class="operator">
+            <span onclick="add_data(true)" class="span_add">新增</span>
+            <!-- <span>修改</span> 月份不能改 -->
+            <span onclick="edit_data()">修改</span>
+            <span onclick="del_data(false)">删除</span>
+            <span onclick="window.history.back();" style="border:1px solid rosybrown;color:#333">返回</span>
+        </div>
+        <table id="table_01" class="gridtable">
+            <tr class="tr_header">
+                <td></td>
+                <td id="monthFrom" class="can_edit" place="请输入开始月份">开始月份</td>
+                <td id="monthTo" place="请输入结束月份" class="can_edit">结束月份</td>
+            </tr>
+            <tbody id="table_01_tboby">
+
+            </tbody>
+        </table>
+
+
+    </div>
+
+
+</body>
+
+</html>
+<script type="text/javascript">
+
+    var send_url = "${ctxPath}/baishuelectricPricePeriod/update_baishuElectricPricePeriod";//发送
+    var get_url = "${ctxPath}/baishuelectricPricePeriod/get_baishuElectricPricePeriod";//获取
+
+    var all_data = get_session("all_data");
+    var this_page_data = get_session("season_data"); 
+
+    var _this_key="seasonPeriod";
+    var _indexs=+GetQueryValue("indexs");
+
+
+    render_page("none", this_page_data, 100, 100, ["monthFrom", "monthTo"])
+
+    function btn_confirm(fn, arr) {   //arr  ["indexs","add"]  ["indexs","edit"] ["indexs","delete"] 
+
+        var all_data = JSON.parse(window.sessionStorage.getItem("all_data"));
+
+        var _add_data = {};
+
+        var _monthFrom = $("#monthFroms").find("input").val();
+
+        var _monthTo = $("#monthTos").find("input").val();
+
+        if (arr[1] == "delete") {
+
+
+            this_page_data.splice(arr[0], 1);
+
+            var page_index = +GetQueryValue("indexs");
+
+            console.log(page_index)
+
+            all_data["electricPricePeriod"][page_index].seasonPeriod = this_page_data;
+
+            window.sessionStorage.setItem("all_data", JSON.stringify(all_data));
+            set_session("all_data", all_data)
+
+
+
+            console.log("删除后");
+
+            console.log(all_data)
+
+
+        } else {
+            //增加；
+            //校验是否是数字，月份。
+           //增加；
+            //校验是否是数字，月份。
+            if (isMonth(+_monthFrom) && isMonth(+_monthTo)) {
+
+                if(arr[1] == "add"){
+                    _add_data["monthFrom"] = +_monthFrom;
+                    _add_data["monthTo"] = +_monthTo;
+                    all_data.electricPricePeriod[+GetQueryValue("indexs")].seasonPeriod.push(_add_data);
+                    
+                }else{// "edit"
+                    all_data.electricPricePeriod[+GetQueryValue("indexs")].seasonPeriod[arr[0]]["monthFrom"] = +_monthFrom;
+                    all_data.electricPricePeriod[+GetQueryValue("indexs")].seasonPeriod[arr[0]]["monthTo"] = +_monthTo;
+                   
+                }
+                this_page_data = all_data.electricPricePeriod[+GetQueryValue("indexs")].seasonPeriod;
+                console.log("all_data", all_data);
+
+               
+            } else {
+                window.alert("本次输入的数据不合法");
+                return;
+            }
+
+        }
+
+
+        if (typeof fn == 'function') {
+            //callback post data to server.
+            try {
+                var is_success = fn(send_url, all_data);
+                console.log('is_success', is_success)
+                if (is_success) {
+                    set_session("all_data", all_data);
+                    set_session("season_data", this_page_data);
+
+                    render_page("none", this_page_data, 100, 100, ["monthFrom", "monthTo"]);
+
+                    btn_hidden();
+
+                    window.alert("数据提交成功");
+
+                    get_remote_data(get_url,all_data)//重新获取数据；
+
+                    this_page_data=get_session("all_data")[_indexs][_this_key];
+
+                    window.location.reload();
+
+                } else {
+                    btn_hidden();
+                    window.alert("数据提交失败");
+                }
+            } catch (e) {
+				window.location.reload();
+                //console.log("提交数据错误", e.toString());
+            }
+
+        }
+
+    }
+    
+    function edit_data() {
+    var active_tr = $(".can_bg_active");
+    if (active_tr.length < 1) {
+        window.alert("请选择一项")
+        return;
+    }
+    var indexs = active_tr.eq(0).attr("indexs");
+    add_data(true);//弹框。
+    //修改。
+    $("#btn_confirm").attr("onclick", "btn_confirm(post_to_server,[" + indexs + ",'edit'])");
+
+    refill_data(4)
+}
+
+</script>

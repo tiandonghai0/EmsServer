@@ -1,0 +1,111 @@
+buildscript {
+    ext {
+        springBootVersion = '2.1.0.RELEASE'
+    }
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/spring' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://repo.spring.io/snapshot' }
+        maven { url 'https://repo.spring.io/milestone' }
+        maven {
+            url "https://repo1.maven.org/maven2"
+        }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: 'idea'
+    apply plugin: "eclipse"
+    apply plugin: "maven"
+    apply plugin: 'eclipse-wtp'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+}
+
+configurations {
+    provided
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
+
+repositories {
+    //mavenCentral()
+    maven {
+        url "https://repo1.maven.org/maven2"
+    }
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+}
+
+//ext {
+//    springCloudVersion = 'Greenwich.M1'
+//}
+//
+//dependencyManagement {
+//    imports {
+//        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+//    }
+//}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+dependencies {
+    compile(
+            'com.baomidou:mybatis-plus-boot-starter:3.2.0'
+    )
+    implementation(
+            'org.springframework.boot:spring-boot-starter-web',
+            'org.springframework.boot:spring-boot-starter-amqp',
+            'org.springframework.boot:spring-boot-starter-data-mongodb',
+            'org.springframework.boot:spring-boot-starter-data-redis',
+            'com.zaxxer:HikariCP:3.2.0',
+            'mysql:mysql-connector-java:5.1.47',
+            'com.ibeetl:beetl:2.9.3',
+            'com.ibeetl:beetlsql:2.10.39',
+            'com.ibeetl:beetl-framework-starter:1.1.68.RELEASE',
+            'com.google.protobuf:protobuf-java:3.6.1',
+            'javax.mail:mail:1.4.7',
+            'commons-codec:commons-codec:1.12',
+            'com.github.binarywang:wx-java:3.8.0',
+            'org.apache.poi:poi:3.15', //excel 图表处理开始
+            'org.apache.poi:poi-ooxml:3.15',
+            'org.apache.poi:poi-ooxml-schemas:3.15',
+            'org.apache.poi:ooxml-schemas:1.1',
+            'jfree:jcommon:1.0.16',
+            'jfree:jfreechart:1.0.13', //excel 图表处理结束
+            fileTree(dir: 'lib', include: '*.jar'),
+            'org.redisson:redisson:3.8.2',
+            'com.aliyun:aliyun-java-sdk-core:4.5.13',//阿里云短信
+            'cn.hutool:hutool-all:5.7.22'
+    )
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+task copyJars(type: Copy) {
+    from configurations.runtime
+    into 'lib'
+}

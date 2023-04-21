@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shmet.dao.UserMapper">
+    <!-- 实体类型映射 -->
+    <resultMap type="com.shmet.entity.mysql.gen.User" id="baseMap">
+        <result property="account" column="account"/>
+        <result property="password" column="password"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="secondaryPassword" column="secondary_password"/>
+        <result property="projectNo" column="project_no"/>
+    </resultMap>
+
+    <sql id="base_column_sql">
+        account
+        ,
+        project_no,
+        password,
+        name,
+        email,
+        secondary_password,
+        create_date,
+        update_date
+    </sql>
+
+    <update id="updateSecondPwd">
+        update `t_user`
+        set secondary_password=#{newPwd}
+        where project_no = #{projectNo}
+          and account = #{projectNo}
+    </update>
+    <!--根据登录账号 获取 操作平台-->
+    <select id="getOpPlatform" resultType="java.lang.String">
+        SELECT DISTINCT (p.project_name)
+        FROM t_user u,
+             t_customer c,
+             t_project p
+        WHERE u.project_no = c.NO
+          AND c.customer_id = p.customer_id
+          AND u.account = #{account}
+    </select>
+
+</mapper>

@@ -1,0 +1,108 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>运行数据监控</title>
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/gray/easyui.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/icon.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/css/ems.css">
+  <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/ems.utils.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/jquery.easyui.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/moment.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/socket.io/socket.io.js"></script>
+  <style type="text/css">
+  </style>
+  <script>
+        var socket = io.connect('http://www.jz-energy.cn:9091');
+        //var socket = io.connect('http://localhost:9091');
+        socket.on('connect', function () {
+            output('<span class="connect-msg">Client has connected to the server!</span>');
+        });
+        socket.on('realDataByAccone', function (data) {
+            output('<span class="username-msg">' + data + '</span> ');
+        });
+        socket.on('realData', function (data) {
+            output('<span class="username-msg">' + data + '</span> ');
+        });
+        socket.on('disconnect', function () {
+            output('<span class="disconnect-msg">The client has disconnected!</span>');
+        });
+        function sendDisconnect() {
+            socket.disconnect();
+        }
+        function isNull( str ){
+			if ( str == "" ) return true;
+			var regu = "^[ ]+$";
+			var re = new RegExp(regu);
+			return re.test(str);
+		}
+        function sendMessage() {
+            var acconeIdList = $("#acconeIdList").val();
+            if (!!acconeIdList && !isNull(acconeIdList)) {
+                //var arrayObj = acconeIdList.split(",");
+                socket.emit('realDataByAccone', acconeIdList, function (data) {
+                //socket.emit('realDataByAccone', JSON.stringify(arrayObj), function (data) {
+	                output('<span class="username-msg">' + data + '</span> ');
+	            });
+            } else {
+                alert("acconeId不可为空！");
+            }
+        }
+        function sendMessageReal() {
+            var deviceNoList = $("#deviceNoList").val();
+            var tagCodeList = $("#tagCodeList").val();
+            if (!!deviceNoList && !isNull(deviceNoList)) {
+                var param = new Array();
+                var deviceArrObj = deviceNoList.split(",");
+                var tagArrObj = tagCodeList.split(",");
+                for (i = 0; i < deviceArrObj.length; i++) {
+                    item = {};
+                    item["deviceNo"] = deviceArrObj[i];
+                    item["tagCode"] = tagArrObj[i];
+                    param[i] = item;
+                }
+                socket.emit('realData', JSON.stringify(param), function (data) {
+                    output('<span class="username-msg">' + data + '</span> ');
+                });
+            } else {
+                alert("deviceNo,tagCode不可为空！");
+            }
+        }
+        function output(message) {
+            var currentTime = "<span class='time'>" + moment().format('HH:mm:ss.SSS') + "</span>";
+            var element = $("<div>" + currentTime + " " + message + "</div>");
+            $('#console').prepend(element);
+        }
+    </script>
+</head>
+<body>
+<div id="console" class="well">
+    <div id="tt" class="easyui-tabs" style="width:100%;height:100%">
+        <div title="Accone采集数据实时监控" style="padding:10px">
+<form class="well form-inline" onsubmit="return false;">
+    <input id="acconeIdList" class="input-xlarge" type="text" placeholder="输入EmuId"/>
+    <button type="button" onClick="sendMessage()" class="btn" id="send">Send</button>
+</form>
+</div>
+<div title="实时监控-目前不可用" style="padding:10px">
+<form class="well form-inline" onsubmit="return false;">
+    <input id="deviceNoList" class="input-xlarge" type="text" placeholder="输入deviceNo，用[,]分割,数量和tagCode一致"/>
+    </br>
+    <input id="tagCodeList" class="input-xlarge" type="text" placeholder="输入tagCode，用[,]分割,数量和deviceNo一致"/>
+    <button type="button" onClick="sendMessageReal()" class="btn" id="sendReal">Send</button>
+</form>
+</div>
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function(){
+	    $('#tt').tabs({
+            plain: $('#plain').is(':checked'),
+            narrow: $('#narrow').is(':checked'),
+            pill: $('#pill').is(':checked'),
+            justified: $('#justified').is(':checked')
+        })
+	});
+    </script>
+</body>
+</html>	

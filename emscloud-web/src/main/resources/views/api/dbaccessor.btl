@@ -1,0 +1,89 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>提交sql语句并返回结果</title>
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/gray/easyui.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/icon.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/css/ems.css">
+  <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/ems.utils.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/jquery.easyui.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/moment.js"></script>
+  <style type="text/css">
+  </style>
+</head>
+<body>
+    <div id="tt" class="easyui-tabs" style="width:100%;height:100%">
+        <div title="测试mysql接口" style="padding:10px">
+            <div id="console" class="well">
+            <form id="ff" method="post">
+                <div id="verDiv" style="margin-bottom:20px;color:red">
+                    
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" name="sql" id="sql" style="width:90%; height:100px;" data-options="label:'sql语句:',required:true, multiline:true">
+<br>
+                    <input class="easyui-textbox" name="args" id="args" style="width:90%; height:50px;" data-options="label:'参数:',required:true">
+                </div>
+            </form>
+            <div style="text-align:center;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm1()" style="width:80px">Select</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm2()" style="width:80px">Update&Insert&Delete</a>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        $('#tt').tabs({
+            plain: $('#plain').is(':checked'),
+            narrow: $('#narrow').is(':checked'),
+            pill: $('#pill').is(':checked'),
+            justified: $('#justified').is(':checked')
+        })
+    });
+    
+    function submitForm1(){
+        var params = {}
+        params.sql = $("#sql").val();
+        params.args = (!!$("#args").val())? $("#args").val().split(",") : [];
+        $.ajax({
+            type: "POST",
+            url: "${ctxPath}/dbaccess/select",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(params),
+            dataType: "json",
+            success: function (data) {
+                output('<span class="connect-msg">' + JSON.stringify(data) + '</span>');
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+    }
+    function submitForm2(){
+        var params = {}
+        params.sql = $("#sql").val();
+        params.args = (!!$("#args").val())? $("#args").val().split(",") : [];
+        $.ajax({
+            type: "POST",
+            url: "${ctxPath}/dbaccess/update",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(params),
+            dataType: "json",
+            success: function (data) {
+                output('<span class="connect-msg">' + JSON.stringify(data) + '</span>');
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+    }
+    function output(message) {
+	    var currentTime = "<span class='time'>" + moment().format('HH:mm:ss.SSS') + "</span>";
+	    var element = $("<div>" + currentTime + " " + message + "</div>");
+	    $('#console').prepend(element);
+    }
+    </script>
+</body>
+</html> 

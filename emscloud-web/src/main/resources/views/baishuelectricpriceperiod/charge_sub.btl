@@ -1,0 +1,212 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>柏树电力价格周期</title>
+
+    <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+    <script src="${ctxPath}/js/m_index.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/css/m_index.css">
+
+    
+    
+</head>
+
+<body>
+    <div class="main_container">
+        <div class="operator">
+            <span class="span_add" onclick="add_data()">新增</span>
+            <span class="span_edit" onclick="edit_data()">修改</span>
+            <span class="span_dele" onclick="del_data(false)">删除</span>
+            <span onclick="window.history.back();" style="border:1px solid rosybrown;color:#333">返回</span>
+        </div>
+        <table id="table_01" class="gridtable">
+            <tr class="tr_header">
+                <td></td>
+                <td id="timeFrom" class="can_edit" place="请输入开始时间">开始时间</td>
+                <td id="timeTo" class="can_edit" place="请输入结束时间">结束时间</td>
+                <td id="chargeType" class="can_edit" place="请输入收费类型">收费类型</td>
+                <td id="chargeTypeName" class="can_edit" place="请输入收费类型名">收费类型名</td>
+                <td id="chargeP" class="can_edit" place="请输入收费功率">收费功率</td>
+            </tr>
+            <tbody id="table_01_tboby">
+
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>
+
+
+<script type="text/javascript">
+
+    var _this_key="chargePolicy";
+    var _this_sub_key="policy";
+    var _index=+GetQueryValue("indexs");
+    var _sub_index=+GetQueryValue("chargePolicy");
+
+
+    var send_url = "${ctxPath}/baishuelectricPricePeriod/update_baishuElectricPricePeriod";//发送
+    var get_url = "${ctxPath}/baishuelectricPricePeriod/get_baishuElectricPricePeriod";//获取
+
+    var all_data = get_session("all_data");
+
+    var this_page_data = get_session("charge_data_sub")
+
+    console.log("this_page_data", this_page_data)
+
+    
+    var send_url = "${ctxPath}/baishuelectricPricePeriod/update_baishuElectricPricePeriod";//发送
+
+    render_page("none", this_page_data, 0, 2359, ["timeFrom", "timeTo", "chargeType", "chargeTypeName", "chargeP"]);
+
+    function btn_confirm(fn, arr) {
+
+        var all_data = JSON.parse(window.sessionStorage.getItem("all_data"));
+
+        var timeFrom = $("#timeFroms").find("input").val();
+        var timeTo = $("#timeTos").find("input").val();
+        var chargeType = $("#chargeTypes").find("input").val();//设置。//number
+        var chargeTypeName = $("#chargeTypeNames").find("input").val();//string
+        var chargeP = $("#chargePs").find("input").val(); //number
+
+        console.log(timeFrom,timeTo,chargeType,chargeTypeName,chargeP);
+
+        //删除操作；
+        if (arr[1] == "delete") {
+
+            console.log("进入delete")
+
+            // this_page_data.splice(this_page_data.length - 1, 1);
+            this_page_data.splice(arr[0], 1);//删除指定一个
+
+            all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy[+GetQueryValue("chargePolicy")].policy = this_page_data;
+
+            console.log("all_data", all_data);
+
+        } else {
+
+            var _add_data = {};
+            _add_data["type"] = null;
+            _add_data["typeName"] = null;
+            _add_data["handler"] = null;
+
+            //新增；
+            if (arr[1] == "add") {
+
+
+                // all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy[arr[0]];
+
+                //判断值的类型是否合法。
+                if (isNumber(+timeFrom) && isNumber(+timeTo) && isNumber(+chargeType) && isNumber(+chargeP) && $.trim(chargeTypeName).length) {
+
+
+                    _add_data["timeFrom"] = +timeFrom;
+                    _add_data["timeTo"] = +timeTo;
+                    _add_data["chargeType"] = +chargeType;
+                    _add_data["chargeTypeName"] = chargeTypeName;
+                    _add_data["chargeP"] = +chargeP;
+
+
+                    console.log("this_page_data _add_data", _add_data);
+
+                    // all_data.electricPricePeriod.push(_add_data);
+
+                    all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy[+GetQueryValue("chargePolicy")].policy.push(_add_data)
+
+                    this_page_data = all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy[+GetQueryValue("chargePolicy")].policy
+
+                } else {
+
+                    window.alert("本次输入的数据不合法");
+                    return;
+
+                }
+
+            } else {
+                if (isNumber(chargeType) && isNumber(timeFrom)&&isNumber(timeTo)&&isNumber(chargeP) && $.trim(chargeTypeName).length) {
+                    //var exist_data_from = all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy[+GetQueryValue("chargePolicy")].policy[+arr[0]];
+
+                    //console.log("exist_data_from", exist_data_from)
+
+                    // var timeFrom = $("#TimeForms").find("input").val(exist_data_from.timeFrom);
+                    // var timeTo = $("#timeTos").find("input").val(exist_data_from.timeTo);
+
+                    _add_data["chargeType"] = chargeType;
+                    _add_data["chargeTypeName"] = chargeTypeName;
+                    _add_data["chargeP"] = chargeP;
+                    // _add_data["timeFrom"] = exist_data_from.timeFrom;
+                    // _add_data["timeTo"] = exist_data_from.timeTo;
+                    _add_data["timeFrom"] = timeFrom;
+                    _add_data["timeTo"] = timeTo;
+
+                    all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy[+GetQueryValue("chargePolicy")].policy[+arr[0]] = _add_data;
+
+                    this_page_data = all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy[+GetQueryValue("chargePolicy")].policy;
+                    console.log("_add_data", _add_data);
+
+                }else{
+                    window.alert("本次输入值不合法");
+                    return;
+                }
+            }
+        }
+
+        if (typeof fn == 'function') {
+            //callback post data to server.
+            try {
+                var is_success = fn(send_url, all_data);
+                console.log('is_success', is_success)
+                if (is_success) {
+                    set_session("all_data", all_data);
+                    set_session("charge_data_sub", this_page_data);
+                    console.log("after_提交,this_page_data",this_page_data)
+
+                    render_page("none", this_page_data, 0, 2359, ["timeFrom", "timeTo", "chargeType", "chargeTypeName", "chargeP"]);
+                    btn_hidden();
+
+                    window.alert("数据提交成功");
+
+                    get_remote_data(get_url,all_data)//重新获取数据；
+
+                    this_page_data=get_session("all_data")[_indexs][_this_key][_sub_index][_this_sub_key];
+
+                    window.location.reload();
+
+                } else {
+                    btn_hidden();
+                    window.alert("数据提交失败");
+                }
+            } catch (e) {
+				window.location.reload();
+                console.log("提交数据错误", e.toString());
+            }
+
+
+
+        }
+
+
+
+    }
+
+    //修改。out
+    function edit_data() {
+        var active_tr = $(".can_bg_active");
+        if (active_tr.length < 1) {
+            window.alert("请选择一项")
+            return;
+        }
+        var indexs = active_tr.eq(0).attr("indexs");
+        add_data(true, true);//弹框。
+        //修改。
+        $("#btn_confirm").attr("onclick", "btn_confirm(post_to_server,[" + indexs + ",'edit'])");
+
+        refill_data(7)
+    }
+    
+   
+
+</script>

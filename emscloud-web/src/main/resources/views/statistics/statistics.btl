@@ -1,0 +1,252 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>统计报表</title>
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/gray/easyui.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/icon.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/css/ems.css">
+  <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/ems.utils.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/jquery.easyui.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/moment.js"></script>
+  <style type="text/css">
+  </style>
+</head>
+<body>
+    <div id="tt" class="easyui-tabs" style="width:100%;height:100%">
+        <div title="统计报表" style="padding:10px">
+            <div id="console" class="well">
+            <input type="button" value="获取实时历史数据" id="real">
+            <input type="button" value="获取小时统计数据" id="hour">
+            <input type="button" value="获取天统计数据" id="day">
+            <input type="button" value="获取月统计数据" id="month">
+            <input type="button" value="获取实时告警数据" id="faultreal">
+            <input type="button" value="获取充放电配置数据" id="chargepolicy">
+        </div>
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function(){
+	    $('#tt').tabs({
+            plain: $('#plain').is(':checked'),
+            narrow: $('#narrow').is(':checked'),
+            pill: $('#pill').is(':checked'),
+            justified: $('#justified').is(':checked')
+        })
+	});
+	$("#real").click(function(){
+        var real = {};
+        real.sortFlag = 1;
+        real.pageNum = 0;
+        real.pageCount = 200;
+        real.startTime = 2018120100;
+        real.endTime = 2019123159;
+        var statisticsRequestItemList = new Array();
+        var statisticsRequestItem = {}
+        statisticsRequestItem.deviceNo = 201900020010001;
+        statisticsRequestItem.tagCodeList = new Array("EPI", "IA");
+        statisticsRequestItemList.push(statisticsRequestItem);
+            
+        var statisticsRequestItem2 = {}
+        statisticsRequestItem2.deviceNo = 201900020010002;
+        statisticsRequestItem2.tagCodeList = new Array("EPE", "P");
+        statisticsRequestItemList.push(statisticsRequestItem2);
+        
+        var statisticsRequestItem3 = {}
+        statisticsRequestItem3.deviceNo = 201900020010003;
+        statisticsRequestItem3.tagCodeList = new Array("EPI", "IB");
+    
+        statisticsRequestItemList.push(statisticsRequestItem3);
+    
+        real.statisticsRequestItemList = statisticsRequestItemList;
+        $.ajax({
+            type: "POST",
+            url: "${ctxPath}/statistics/single/real",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(real),
+            dataType: "json",
+            success: function (message) {
+                output(JSON.stringify(message));
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+
+    });
+    
+    $("#faultreal").click(function(){
+        var real = {};
+        real.sortFlag = 1;
+        real.pageNum = 0;
+        real.pageCount = 200;
+        real.startTime = 2018120100;
+        real.endTime = 2019123159;
+        real.subProjectId = 20180001001;
+        real.excludeTagCodeList = new Array();
+        real.excludeTagCodeList.push("ERR1");
+        real.excludeTagCodeList.push("ERR2");
+        real.excludeTagCodeList.push("ERR3");
+        real.excludeTagCodeList.push("ERR4");
+        $.ajax({
+            type: "POST",
+            url: "${ctxPath}/statistics/fault/real",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(real),
+            dataType: "json",
+            success: function (message) {
+                output(JSON.stringify(message));
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+
+    });
+        
+    $("#hour").click(function(){
+        var hour = {};
+        hour.sortFlag = 1;
+        hour.pageNum = 0;
+        hour.pageCount = 200;
+        hour.startTime = 2019070600;
+        hour.endTime = 2019070659;
+        var statisticsRequestItemList = new Array();
+        var statisticsRequestItem = {}
+        statisticsRequestItem.deviceNo = 201900020010003;
+        statisticsRequestItem.tagCodeList = new Array("EPI", "EPE", "P");
+        statisticsRequestItemList.push(statisticsRequestItem);
+            
+        //var statisticsRequestItem2 = {}
+        //statisticsRequestItem2.deviceNo = 201800020010002;
+        //statisticsRequestItem2.tagCodeList = new Array("EPI", "IF");
+        //statisticsRequestItemList.push(statisticsRequestItem2);
+            
+        //var statisticsRequestItem3 = {}
+        //statisticsRequestItem3.deviceNo = 201800020010028;
+        //statisticsRequestItem3.tagCodeList = new Array("EPI", "IF");
+    
+        //statisticsRequestItemList.push(statisticsRequestItem3);
+    
+        hour.statisticsRequestItemList = statisticsRequestItemList;
+        $.ajax({
+	        type: "POST",
+	        url: "${ctxPath}/statistics/single/hour",
+	        contentType: "application/json; charset=utf-8",
+	        data: JSON.stringify(hour),
+	        dataType: "json",
+	        success: function (message) {
+	            output(JSON.stringify(message));
+	        },
+	        error: function (message) {
+	            output(message);
+	        }
+	    });
+
+        });
+        
+        $("#day").click(function(){
+        var day = {};
+        day.sortFlag = 1;
+        day.pageNum = 0;
+        day.pageCount = 200;
+        day.startTime = 20181201;
+        day.endTime = 20181231;
+        var statisticsRequestItemList = new Array();
+        var statisticsRequestItem = {}
+        statisticsRequestItem.deviceNo = 201900020010001;
+        statisticsRequestItem.tagCodeList = new Array("EPI", "IA");
+        statisticsRequestItemList.push(statisticsRequestItem);
+            
+        var statisticsRequestItem2 = {}
+        statisticsRequestItem2.deviceNo = 201900020010002;
+        statisticsRequestItem2.tagCodeList = new Array("EPE", "P");
+        statisticsRequestItemList.push(statisticsRequestItem2);
+        
+        var statisticsRequestItem3 = {}
+        statisticsRequestItem3.deviceNo = 201900020010003;
+        statisticsRequestItem3.tagCodeList = new Array("EPI", "IB");
+    
+        statisticsRequestItemList.push(statisticsRequestItem3);
+    
+        day.statisticsRequestItemList = statisticsRequestItemList;
+        $.ajax({
+            type: "POST",
+            url: "${ctxPath}/statistics/single/day",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(day),
+            dataType: "json",
+            success: function (message) {
+                output(JSON.stringify(message));
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+
+        });
+        
+        $("#month").click(function(){
+        var month = {};
+        month.sortFlag = 1;
+        month.pageNum = 0;
+        month.pageCount = 20;
+        month.startTime = 201812;
+        month.endTime = 201912;
+        var statisticsRequestItemList = new Array();
+        var statisticsRequestItem = {}
+        statisticsRequestItem.deviceNo = 201900020010001;
+        statisticsRequestItem.tagCodeList = new Array("EPI", "IA");
+        statisticsRequestItemList.push(statisticsRequestItem);
+            
+        var statisticsRequestItem2 = {}
+        statisticsRequestItem2.deviceNo = 201900020010002;
+        statisticsRequestItem2.tagCodeList = new Array("EPE", "P");
+        statisticsRequestItemList.push(statisticsRequestItem2);
+        
+        var statisticsRequestItem3 = {}
+        statisticsRequestItem3.deviceNo = 201900020010003;
+        statisticsRequestItem3.tagCodeList = new Array("EPI", "IB");
+    
+        statisticsRequestItemList.push(statisticsRequestItem3);
+    
+        month.statisticsRequestItemList = statisticsRequestItemList;
+        $.ajax({
+            type: "POST",
+            url: "${ctxPath}/statistics/single/month",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(month),
+            dataType: "json",
+            success: function (message) {
+                output(JSON.stringify(message));
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+
+        });
+        
+        $("#chargepolicy").click(function(){
+        var timestamp = new Date().getTime();
+        $.ajax({
+            type: "GET",
+            url: "${ctxPath}/api/projectconfig/chargepolicy?timestamp=" + timestamp + "&subProjectId=20180001001",
+            contentType: "application/json; charset=utf-8",
+            success: function (message) {
+                output(JSON.stringify(message));
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+
+    });
+        function output(message) {
+            var currentTime = "<span class='time'>" + moment().format('HH:mm:ss.SSS') + "</span>";
+            var element = $("<div>" + currentTime + " " + message + "</div>");
+            $('#console').prepend(element);
+        }
+    </script>
+</body>
+</html>	

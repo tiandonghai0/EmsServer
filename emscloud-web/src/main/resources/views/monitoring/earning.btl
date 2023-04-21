@@ -1,0 +1,35 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>收益监测</title>
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/gray/easyui.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/icon.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/css/ems.css">
+  <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/ems.utils.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/jquery.easyui.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+  <style type="text/css">
+  </style>
+</head>
+<body>
+    <div id="tt" class="easyui-tabs" style="width:100%;height:100%">
+        <div title="收益实时监测" style="padding:10px">
+                储能系统的当前实时收益情况（按天、月、年计算）
+            <br> 契约容量与瞬时最高功率记录，按天、月、年显示曲线
+            <br>按年、月、天显示储能系统收益曲线
+            <br>将设备折旧等成本计算进去得出的总收益（实时和曲线-天、月、年）
+        </div>
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function(){
+	    $('#tt').tabs({
+            plain: $('#plain').is(':checked'),
+            narrow: $('#narrow').is(':checked'),
+            pill: $('#pill').is(':checked'),
+            justified: $('#justified').is(':checked')
+        })
+	});
+    </script>
+</body>
+</html>	

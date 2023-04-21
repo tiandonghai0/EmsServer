@@ -1,0 +1,57 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>空调控制</title>
+    <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/gray/easyui.css">
+    <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="${ctxPath}/css/ems.css">
+    <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="${ctxPath}/js/ems.utils.js"></script>
+    <script type="text/javascript" src="${ctxPath}/js/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="${ctxPath}/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+    <style type="text/css">
+        body {
+            margin: 20px auto;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<form id="airControlForm" text-align="center">
+    emuId: &nbsp;&nbsp;<label><input type="text" id="emuId"/></label>
+    温度: &nbsp;&nbsp; <label><input type="text" id="temperature"/></label>
+    空调编号: &nbsp;&nbsp;<label><input type="text" id="airNo"/></label><br><br>
+    emuId:emu编号<br>
+    空调编号: 1 就是 1号, 2 就是 2 号 多台空调区分<br>
+    温度: 0 表示关机 负数表示制冷,正数表示制热<br><br><br>
+
+    <button type="button" onclick="downAirControl()">下发空调控制</button>
+</form>
+
+<script type="text/javascript">
+    function downAirControl() {
+        var param = {};
+        param.emuId = $('#airControlForm #emuId').val();
+        param.esNo = $('#airControlForm #airNo').val();
+        param.t = $('#airControlForm #temperature').val();
+
+        console.log(JSON.stringify(param))
+
+        $.ajax({
+            type: "POST",
+            url: '${ctxPath}/project/aircontrol',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(param),
+            dataType: "json",
+            success: function (jsonData) {
+                if (jsonData.success) {
+                    $.messager.alert("提示", "下发成功");
+                } else {
+                    $.messager.alert("提示", "下发失败," + jsonData.code + ":" + jsonData.message);
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>	

@@ -1,0 +1,203 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>柏树电力价格周期</title>
+
+    <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+    <script src="${ctxPath}/js/m_index.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/css/m_index.css">
+    
+    
+
+    <!-- <link rel="stylesheet" href="m_index.css">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="./m_index.js"></script>
+    <script src="aaa.js"></script> -->
+
+</head>
+
+<body>
+    <div class="main_container">
+        <div class="operator">
+            <span onclick="add_data(true)" class="span_add">新增</span>
+            <!-- <span>修改</span> -->
+             <span onclick="edit_data()">修改</span>
+            <span onclick="del_data(false)">删除</span>
+            <span onclick="window.history.back();" style="border:1px solid rosybrown;color:#333">返回</span>
+        </div>
+        <table id="table_01" class="gridtable">
+            <tr class="tr_header">
+                <td></td>
+                <td id="dayOfWeekFrom" class="can_edit" place="请输入开始星期">开始星期</td>
+                <td id="dayOfWeekTo" class="can_edit" place="请输入结束星期">结束星期</td>
+                <td>策略</td>
+            </tr>
+            <tbody id="table_01_tboby">
+
+            </tbody>
+        </table>
+
+
+    </div>
+
+</body>
+
+</html>
+<script type="text/javascript">
+
+    
+    var all_data=get_session("all_data");
+    
+    var _this_key="chargePolicy";
+    
+    var _indexs=+GetQueryValue("indexs");
+    
+    var this_page_data = get_session("all_data").electricPricePeriod[_indexs].chargePolicy;
+
+    var send_url = "${ctxPath}/baishuelectricPricePeriod/update_baishuElectricPricePeriod";//发送
+    
+    var get_url = "${ctxPath}/baishuelectricPricePeriod/get_baishuElectricPricePeriod";//获取
+
+    render_page("charge", this_page_data, 1, 0, ["dayOfWeekFrom", "dayOfWeekTo"]);
+
+    function go_sub_charge(obj, indexs) {
+        var data = this_page_data[indexs][$(obj).attr("this_key")];
+        //var data = all_data.electricPricePeriod[_indexs][$(obj).attr("this_key")];
+        set_session("charge_data_sub", data);
+    }
+
+    function btn_confirm(fn, arr) {
+
+        var all_data = get_session("all_data");
+
+        var dayOfWeekFrom = $("#dayOfWeekFroms").find("input").val();//设置。
+
+        var dayOfWeekTo = $("#dayOfWeekTos").find("input").val();
+
+        //删除操作；
+        if (arr[1] == "delete") {
+
+            console.log("进入delete")
+
+            // this_page_data.splice(this_page_data.length - 1, 1);//删除最后一个
+            this_page_data.splice(arr[0], 1);//删除指定一个
+
+            all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy = this_page_data;
+
+        } else {
+
+            // 增加
+            var _add_data = {};
+
+            /*子项默认值*/
+            var policy = [{
+                "timeFrom": null,
+                "timeTo": null,
+                "type": null,
+                "typeName": null,
+                "chargeType": null,
+                "chargeTypeName": null,
+                "chargeP": null,
+                "handler": null
+            }];
+
+            all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy[arr[0]];
+
+            //判断值的类型是否合法。
+            if (isWeek(dayOfWeekFrom) && isWeek(dayOfWeekTo)) {
+
+                if(arr[1] == "add"){
+
+                    _add_data["dayOfWeekFrom"] = +dayOfWeekFrom;
+
+                    _add_data["dayOfWeekTo"] = +dayOfWeekTo;
+
+                    _add_data["policy"] = policy;
+
+                    console.log("this_page_data _add_data", _add_data);
+
+                    all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy.push(_add_data);
+
+                    
+
+                }else{
+                    all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy[arr[0]]["dayOfWeekFrom"]=+dayOfWeekFrom;
+                    all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy[arr[0]]["dayOfWeekTo"]=+dayOfWeekTo
+
+                }
+                 this_page_data = all_data.electricPricePeriod[+GetQueryValue("indexs")].chargePolicy;
+
+            } else {
+
+                window.alert("本次输入的数据不合法");
+                return;
+
+            }
+
+        }
+
+        if (typeof fn == 'function') {
+            //callback post data to server.
+            try {
+                var is_success = fn(send_url, all_data);
+                console.log('is_success', is_success)
+                if (is_success) {
+                    set_session("all_data", all_data);
+                    set_session("charge_data", this_page_data);
+
+                    render_page("charge", this_page_data, 1, 0, ["dayOfWeekFrom", "dayOfWeekTo"]);
+
+                    btn_hidden();
+                    window.alert("数据提交成功");
+
+                    get_remote_data(get_url,all_data)//重新获取数据；
+
+                    this_page_data=get_session("all_data")[_indexs][_this_key];
+
+                    window.location.reload();
+                    
+
+                } else {
+                    btn_hidden();
+                    window.alert("数据提交失败");
+                }
+            } catch (e) {
+				window.location.reload();
+                console.log("提交数据错误", e.toString());
+            }
+
+        }
+
+    }
+
+
+    $("body").on("click", ".go_detail", function () {
+        var this_id = $(this).attr("id");
+        var indexs = +$(this).attr("indexs");
+
+
+        if (this_id.indexOf("go_sub_charge") > -1) {
+            go_sub_charge($(this).get(0), indexs)
+            setTimeout(function () {
+                // window.location.href = "./charge_sub.html?indexs=" + GetQueryValue("indexs") + "&chargePolicy=" + indexs;
+                window.location.href = "${ctxPath}/baishuelectricPricePeriod/init_charge_sub?indexs=" + GetQueryValue("indexs")+"&chargePolicy=" + indexs;;
+            }, 200)
+        }
+    });
+
+    function edit_data() {
+    var active_tr = $(".can_bg_active");
+    if (active_tr.length < 1) {
+        window.alert("请选择一项")
+        return;
+    }
+    var indexs = active_tr.eq(0).attr("indexs");
+    add_data(true);//弹框。
+    //修改。
+    $("#btn_confirm").attr("onclick", "btn_confirm(post_to_server,[" + indexs + ",'edit'])");
+
+    refill_data(4)
+}
+
+</script>

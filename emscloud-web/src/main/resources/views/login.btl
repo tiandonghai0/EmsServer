@@ -1,0 +1,61 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>用户登录</title>
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/gray/easyui.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/icon.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/css/ems.css">
+  <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/ems.utils.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/jquery.easyui.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
+<div style="width:100%;text-align:center;">
+ <div style="width:100%;margin:0 auto;width:500px;margin-top:40px">
+ 	<h2 style="width:100%;margin-left:-60px;">请登录系统</h2>
+    <div style="margin:20px 0;"></div>
+    <div class="easyui-panel" title="登录框" style="width:100%;max-width:400px;padding:30px 60px;">
+        <form id="ff" method="post">
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="account" style="width:100%" data-options="label:'登录名:',required:true">
+            </div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-passwordbox" name="password" style="width:100%" data-options="label:'密码:',required:true">
+            </div>
+        </form>
+        <div style="text-align:center;padding:5px 0">
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">登录</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+        </div>
+    </div>
+  </div>
+</div>
+    <script>
+    $(document).ready(function () {  
+	    if (window != top) {  
+	        top.location.href = location.href;  
+	    }  
+    }); 
+    $(function() {
+    	$('#ff').form({
+    	    url:'${ctxPath}/oldlogin',
+    	    success:function(data){
+    	    	var jsonData = eval("("+data+")");
+    	        if (jsonData.successed) {
+        	        window.location = '${ctxPath}/main'
+        	    } else {
+					$.messager.alert("提示", "登录失败");
+                }
+    	    }
+    	});
+    })
+        function submitForm(){
+            $('#ff').form('submit');
+        }
+        function clearForm(){
+            $('#ff').form('clear');
+        }
+    </script>
+</body>
+</html>

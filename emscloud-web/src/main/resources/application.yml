@@ -1,0 +1,210 @@
+server:
+  port: 3335
+socketio:
+  port: 9091
+spring:
+  servlet:
+    multipart:
+      maxFileSize: 100
+      maxRequestSize: 100
+  profiles:
+    active: test
+
+  mail:
+    host: smtp.jz-energy.com
+    username:
+    password: '!qaz2wsx'
+    port: 465
+    default-encoding: utf-8
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 30000
+          ssl:
+            enable: true
+  security:
+    user:
+      password: '!qaz2wsx'
+      name: admin
+jsonFile: /data/emsweb/realDataParams/
+reportFilePath: /data/emsweb/webapps/file
+reportFile: /file/
+website: http://www.jz-energy.cn
+
+filepath:
+  acconefirmware:
+    uploadbasepath: /data/soft/fileupload/accone/update
+    baseurl: http://www.jz-energy.cn/accone/update/firmwares/
+  camera_image_meter:
+    uploadbasepath: /data/emsweb/camera
+  script:
+    basepath: /data/emsweb/script
+    temppath: /data/emsweb/script/temp
+  logo:
+    default: http://www.jz-energy.cn/source/ems_v2/image/default/ems2.0_defalut_logo.png
+    file-prefix: /data/emsweb/webimage/
+    db-prefix: http://www.jz-energy.cn/webimage/
+    max-size: 102400
+    file-exts:
+      - jpg
+      - png
+      - jpeg
+      - bmp
+
+rabbitmq:
+  queues:
+    devicerealdata:
+      bis: ems.realdata.bis
+      disp: ems.realdata.disp
+    updateaccone:
+      response: ems.updateaccone.response
+      request: ems.updateaccone.request
+    systemboot:
+      response: ems.systemboot.response
+      request: ems.systemboot.request
+    systemstop:
+      response: ems.systemstop.response
+      request: ems.systemstop.request
+    pcscontrol:
+      response: ems.pcscontrol.response
+      request: ems.pcscontrol.request
+    getbatdata:
+      request: ems.getbatdata.request
+    sendtextcmd:
+      request: ems.sendtextcmd.request
+      response: ems.sendtextcmd.response
+    watermeter:
+      canceltask: watermeter.cancel.queues
+      rechargetask: watermeter.recharge.queues
+      recordtask: watermeter.recordtask.queues
+    onOffNetwork:
+      request: ems.queues.onOffNetwork.request
+    air:
+      request: ems.queues.air.request
+    ehang365eqptstart:
+      response: ems.ehang365eqptstart.response
+      request: ems.ehang365eqptstart.request
+    ehang365eqptstop:
+      response: ems.ehang365eqptstop.response
+      request: ems.ehang365eqptstop.request
+  exchanges:
+    topic:
+      realdata: ems.topic.realdata
+    direct:
+      updateaccone: ems.direct.updateaccone
+      systemboot: ems.direct.systemboot
+      systemstop: ems.direct.systemstop
+      pcscontrol: ems.direct.pcscontrol
+      getbatdata: ems.direct.getbatdata
+      sendtextcmd: ems.direct.sendtextcmd
+      ehang365eqptstart: ems.direct.ehang365eqptstart
+      ehang365eqptstop: ems.direct.ehang365eqptstop
+    watermeter:
+      canceltask: watermeter.cancel.exchanges
+      rechargetask: watermeter.recharge.exchanges
+      recordtask: watermeter.recordtask.exchanges
+    onOffNetwork:
+      request: ems.exchanges.onOffNetwork.request
+    air:
+      request: ems.exchanges.air.request
+  routingkeys:
+    devicerealdata: ems.devicerealdata
+    updateaccone:
+      request: ems.updateaccone.request
+      response: ems.updateaccone.response
+    systemboot:
+      request: ems.systemboot.request
+      response: ems.systemboot.response
+    systemstop:
+      request: ems.systemstop.request
+      response: ems.systemstop.response
+    pcscontrol:
+      request: ems.pcscontrol.request
+      response: ems.pcscontrol.response
+    getbatdata:
+      request: ems.getbatdata.request
+    sendtextcmd:
+      request: ems.sendtextcmd.request
+      response: ems.sendtextcmd.response
+    watermeter:
+      canceltask: watermeter.cancel.routingkeys
+      rechargetask: watermeter.recharge.routingkeys
+      recordtask: watermeter.recordtask.routingkeys
+    onOffNetwork:
+      request: ems.routingkeys.onOffNetwork.request
+    air:
+      request: ems.routingkeys.air.request
+    ehang365eqptstart:
+      request: ems.ehang365eqptstart.request
+      response: ems.ehang365eqptstart.response
+    ehang365eqptstop:
+      request: ems.ehang365eqptstop.request
+      response: ems.ehang365eqptstop.response
+quartz:
+  cronschedule:
+    pushrealdata: '*/5 * * * * ?'
+    alarm: '*/10 * * * * ?'
+    teld: '0 */10 * * * ?'
+    activemq: '0 */5 * * * ?'
+    baishu_data_provide: '0 */5 * * * ?'
+    check_fault: '0 */5 * * * ?'
+    ehang365: '*/10 * * * * ?'
+    hong_bo: '0 */2 * * * ?'
+    auto_examine: '0 */20 * * * ?'
+  watermeter:
+    task: '0 0/2 * * * ?'
+beetl:
+  templatesPath: /views
+
+#未来将会弃用
+beetlsql:
+  debug: 1
+  basePackage: com.shmet.dao
+
+logging:
+  config: classpath:logback.xml
+  level:
+    com:
+      shmet:
+        handler: debug
+
+email:
+  from: 聚震能源科技
+  template:
+    thresholdalarm: /template/mail/thresholdAlarmMail.btl
+    checkfault: /template/mail/checkFaultMail.btl
+
+management:
+  security:
+    enabled: true
+    roles: SUPERUSER
+  context-path: /admin
+  port: 4571
+  address: 127.0.0.1
+
+##水表网关
+#watermeter:
+#  dahua:
+#    url: http://120.55.102.113
+#    user: admin
+#    password: admin
+#    tokenkey: watermetertoken
+#aliyun sms 相关配置
+aliyun:
+  sms:
+    accessKeyId: LTAI4G5XMsq2FBER1Ej4rnYB
+    accessKeySecret: NIw2BjA99T03uEtvIVBYbMzFcxo0aP
+    endpoint: dysmsapi.aliyuncs.com
+    signName: 聚震能源科技
+#验证码模板code
+registerTemplateCode: SMS_203075412
+access:
+  limit:
+    urls:
+      - /hentong/monitor/*
+#mybatis日志
+#mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

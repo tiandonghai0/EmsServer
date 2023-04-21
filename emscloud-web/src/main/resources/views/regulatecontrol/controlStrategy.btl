@@ -1,0 +1,37 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>运行调控</title>
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/gray/easyui.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/icon.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/css/ems.css">
+  <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/ems.utils.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/jquery.easyui.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+  <style type="text/css">
+  </style>
+</head>
+<body>
+    <div id="tt" class="easyui-tabs" style="width:100%;height:100%">
+        <div title="运行调控" style="padding:10px">
+                        1、储能电池运行策略设置（规律性策略）
+            <br> 2、接入崔博士的预测模块，获取最优参数（预测周期15分钟？30分钟？），可链接到能耗预测模块
+            <br> 3、显示预测的最优参数，可人工编辑调整。
+            <br>4、按照最优参数下发控制指令进行调控。
+            <br>5、显示控制是否成功的设备状态
+            <br>6、显示大厦能源运行曲线、储能电池运行曲线
+        </div>
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function(){
+	    $('#tt').tabs({
+            plain: $('#plain').is(':checked'),
+            narrow: $('#narrow').is(':checked'),
+            pill: $('#pill').is(':checked'),
+            justified: $('#justified').is(':checked')
+        })
+	});
+    </script>
+</body>
+</html>	

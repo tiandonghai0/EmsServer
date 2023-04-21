@@ -1,0 +1,180 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>能源监控概览</title>
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/gray/easyui.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/icon.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/css/ems.css">
+  <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css"/>
+  <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/ems.utils.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/jquery.easyui.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+  <style type="text/css">
+  	ul li {
+  		//list-style-type:none;
+  	}
+  	li {
+  		margin-top:10px;
+  	}
+	ul{margin:0px;padding-left:20px;}
+  	ul li a{ display:block; width: 100%;}  
+	ul li a:hover{ background:#ccc; }
+    .info {
+            border: solid 1px silver;
+        }
+        div.info-top {
+            position: relative;
+            background: none repeat scroll 0 0 #F9F9F9;
+            border-bottom: 1px solid #CCC;
+            border-radius: 5px 5px 0 0;
+        }
+        div.info-top div {
+            display: inline-block;
+            color: #333333;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 31px;
+            padding: 0 10px;
+        }
+        div.info-top img {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            transition-duration: 0.25s;
+        }
+        div.info-top img:hover {
+            box-shadow: 0px 0px 5px #000;
+        }
+        div.info-middle {
+            font-size: 12px;
+            padding: 6px;
+            line-height: 20px;
+        }
+        div.info-bottom {
+            height: 0px;
+            width: 100%;
+            clear: both;
+            text-align: center;
+        }
+        div.info-bottom img {
+            position: relative;
+            z-index: 104;
+        }
+        span {
+            margin-left: 5px;
+            font-size: 11px;
+        }
+        .info-middle img {
+            float: left;
+            margin-right: 6px;
+        }
+  </style>
+</head>
+<body>
+    <div id="container" tabindex="0" class="easyui-layout" style="min-width:1000px; min-height:600px;width:100%;height:100%;">
+        
+    </div>
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.4&key=50faf576859d70e51b6607453b21c40b"></script>
+    <script type="text/javascript">
+	//构建自定义信息窗体
+    function createInfoWindow(title, content) {
+        var info = document.createElement("div");
+        info.className = "info";
+
+        //可以通过下面的方式修改自定义窗体的宽高
+        //info.style.width = "400px";
+        // 定义顶部标题
+        var top = document.createElement("div");
+        var titleD = document.createElement("div");
+        //var closeX = document.createElement("img");
+        top.className = "info-top";
+        titleD.innerHTML = title;
+        //closeX.src = "http://webapi.amap.com/images/close2.gif";
+
+        top.appendChild(titleD);
+        //top.appendChild(closeX);
+        info.appendChild(top);
+
+        // 定义中部内容
+        var middle = document.createElement("div");
+        middle.className = "info-middle";
+        middle.style.backgroundColor = 'white';
+        middle.innerHTML = content;
+        info.appendChild(middle);
+
+        // 定义底部内容
+        var bottom = document.createElement("div");
+        bottom.className = "info-bottom";
+        bottom.style.position = 'relative';
+        bottom.style.top = '0px';
+        bottom.style.margin = '0 auto';
+        var sharp = document.createElement("img");
+        sharp.src = "http://webapi.amap.com/images/sharp.png";
+        bottom.appendChild(sharp);
+        info.appendChild(bottom);
+        return info;
+    }
+        AMap.service('AMap.Geocoder',function(){//回调函数
+		    //实例化Geocoder
+		    geocoder = new AMap.Geocoder({
+		        city: "021"
+		    });
+		    geocoder.getLocation("上海市同达创业大厦", function(status, result) {
+		    if (status === 'complete' && result.info === 'OK') {
+		    	console.log(result);
+                var lng = result.geocodes[0].location.lng
+				var lat = result.geocodes[0].location.lat
+                var map = new AMap.Map('container',{
+                    pitch:25,
+	                viewMode:'3D',
+	                zoom: 40,
+	                expandZoomRange:false,
+	                resizeEnable: false,
+	                center:[lng, lat]
+                });
+                var polygonArr = new Array();//多边形覆盖物节点坐标数组
+                polygonArr.push([lng-0.00019, lat+0.00025]);
+    			polygonArr.push([lng+0.00019, lat+0.00025]);
+                polygonArr.push([lng+0.00019, lat-0.00019]);
+    			polygonArr.push([lng-0.00019, lat-0.00019]);
+    			
+			    var  polygon = new AMap.Polygon({
+			        path: polygonArr,//设置多边形边界路径
+			        strokeColor: "#FF33FF", //线颜色
+			        strokeOpacity: 0.2, //线透明度
+			        strokeWeight: 3,    //线宽
+			        fillColor: "#1791fc", //填充色
+			        fillOpacity: 0.35//填充透明度
+			    });
+			    polygon.setMap(map);
+                marker = new AMap.Marker({
+                    map: map,
+                    position: [lng, lat],
+                    title: '同达创业大厦',
+                    content: '<div style="margin-left:-24px; margin-top:10px; font-size:11px; width:100px;color:gray">同达创业大厦</div>'
+                });
+                marker.setMap(map);
+                
+                map.setFeatures(['bg', 'road', 'building']);
+
+                var title='运行信息',
+				content=[];
+				content.push("电量：100");
+				content.push("故障：无");
+				var infoWindow = new AMap.InfoWindow({
+				    isCustom: true,  //使用自定义窗体
+				    content: createInfoWindow(title,content.join("<br>")),
+				    offset: new AMap.Pixel(16, -50)//-113, -140
+				});
+				infoWindow.open(map, [lng, lat]);
+				
+		    }else{
+		        //获取经纬度失败
+		    }
+		});
+	})
+	
+    </script>
+</body>
+</html>	

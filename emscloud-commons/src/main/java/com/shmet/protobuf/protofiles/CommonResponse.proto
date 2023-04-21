@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+//生成的数据访问类的类名  
+option java_outer_classname = "CommonResponseProto";
+
+message ResponseData {  
+    sint32 status =1;
+    sint32 projectId = 2;
+}

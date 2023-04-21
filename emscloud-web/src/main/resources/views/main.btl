@@ -1,0 +1,113 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>大厦智慧能源管理系统</title>
+    <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/gray/easyui.css">
+    <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="${ctxPath}/css/ems.css">
+    <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="${ctxPath}/js/ems.utils.js"></script>
+    <script type="text/javascript" src="${ctxPath}/js/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="${ctxPath}/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+    <style type="text/css">
+        ul li {
+        / / list-style-type: none;
+        }
+
+        li {
+            margin-top: 10px;
+        }
+
+        ul {
+            margin: 0px;
+            padding-left: 20px;
+        }
+
+        ul li a {
+            display: block;
+            width: 100%;
+        }
+
+        ul li a:hover {
+            background: #ccc;
+        }
+
+    </style>
+</head>
+<body>
+<div class="easyui-layout" style="min-width:1000px; min-height:700px;width:100%;height:100%;">
+    <div data-options="region:'north'" style="height:50px;text-align:center;">
+        <font style="font-family:微软雅黑; font-size:28; font-weight:bold;">大厦智慧能源管理系统</font>
+        <div style="font-size:14;float:right;line-height:45px;margin-right:100px;">${userinfo.name}<a
+                style="font-size: 14;float:right;line-height:45px;margin-left:10px;" href="${ctxPath}/logout">注销</a>
+        </div>
+    </div>
+    <div data-options="region:'south',split:false" style="height:25px;text-align:center;"><font
+            style="font-family:微软雅黑; font-size:14;">copy right All 上海聚震能源科技有限公司</font></div>
+    <div data-options="region:'west',split:false" title="菜单栏" style="width:150px;">
+        <div class="easyui-accordion" data-options="fit:true,border:false">
+            <div title="监控管理" data-options="selected:true" style="padding:5px;background:#f1f1f1;">
+                <ul style="font-family:'微软雅黑'; font-size:14px;">
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/overview/init')">概览</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/dbaccess/init')">Mysql接口</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/accone/updatefirmware/init')">更新固件</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/monitoring/operation/init')">运行状态监测</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/monitoring/fault/init')">异常监测</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/regulatecontrol/controlstrategy/init')">运行调控</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/prediction/prediction/init')">能耗预测</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/statistics/statistics/init')">统计报表</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/monitoring/earning/init')">收益监测</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/monitoring/air/control')">空调控制</a>
+                    </li>
+                </ul>
+            </div>
+            <div title="基础管理" data-options="selected:true" style="padding:5px;background:#f1f1f1;">
+                <ul style="font-family:'微软雅黑'; font-size:14px;">
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/overview/init')">设备管理</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/occupancy/init')">站点管理</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/device/init')">我的设备</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="menuclick('${ctxPath}/baishuelectricPricePeriod/init')">柏树电力价格周期</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'">
+        <iframe id="centercontent" src='${ctxPath}/overview/init' frameborder='0'
+                style='border: 0; width: 100%; height: 100%;'>
+        </iframe>
+    </div>
+</div>
+<script type="text/javascript">
+    function menuclick(url) {
+        $("#centercontent").attr("src", url);
+    }
+</script>
+</body>
+</html>	

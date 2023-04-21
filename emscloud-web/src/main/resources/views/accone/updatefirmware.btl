@@ -1,0 +1,638 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>更新Accone固件</title>
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/gray/easyui.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/js/easyui/themes/icon.css">
+  <link rel="stylesheet" type="text/css" href="${ctxPath}/css/ems.css">
+  <script type="text/javascript" src="${ctxPath}/webjars/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/ems.utils.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/jquery.easyui.min.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/easyui/locale/easyui-lang-zh_CN.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/moment.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="${ctxPath}/js/updatefiemware.js"></script>
+  <style type="text/css">
+  </style>
+</head>
+<body>
+    <div id="tt" class="easyui-tabs" style="width:100%;height:100%">
+        <div title="EMU状态" style="padding:10px">
+            <div style="margin-top:5px;">
+                <a href="#" class="easyui-linkbutton" style="color:#000000;width:90px;" iconCls="icon-search" onclick="updatefirmware.dsearch();">刷新</a>
+            </div>
+            <table id="dg" style="min-width:970px;width:99%;height:490px;" title="EMU状态"
+                    data-options="loadMsg:'loading',rownumbers:true,pagination:true,pageSize:20,loadFilter:updatefirmware.UpdateFirmwareDG.pagerFilter,method:'get'">
+                <thead>
+                    <tr>
+                        <th data-options="field:'acconeId',width:200,
+                            formatter:function(value, row){
+                                if (row.tAccone) {
+                                    return row.tAccone.acconeId;
+                                }
+                                return '';
+                            }">EMUID</th>
+                         <th data-options="field:'iccid',width:200,
+                                                     formatter:function(value, row){
+                                                         if (row.tAccone) {
+                                                             return row.tAccone.iccid;
+                                                         }
+                                                         return '';
+                                                     }">iccid</th>
+                         <th data-options="field:'acconeName',width:200,
+                                                                             formatter:function(value, row){
+                                                                                 if (row.tAccone) {
+                                                                                     return row.tAccone.acconeName;
+                                                                                 }
+                                                                                 return '';
+                                                                             }">EMU名称</th>
+                        <th data-options="field:'ver',width:80,
+                            formatter:function(value, row){
+                                if (row.tAccone) {
+                                    return row.tAccone.ver;
+                                }
+                                return '';
+                            }">固件版本号</th>
+                        <th data-options="field:'connectedStatus',width:80,
+                            formatter:function(value, row){
+                                if (value && value == 1) {
+                                    return '<font style=\'color:green\'>在线</font>';
+                                } else {
+                                    return '<font style=\'color:red\'>离线</font>';
+                                }
+                                return '';
+                            }">连接状态</th>
+                        <th data-options="field:'loginStatus',width:80,
+                            formatter:function(value, row){
+                                if (value && value == 1) {
+                                    return '<font style=\'color:green\'>已登录</font>';
+                                } else {
+                                    return '<font style=\'color:red\'>未登录</font>';
+                                }
+                                return '';
+                            }">登录状态</th>
+
+                        <th data-options="field:'lastLoginTime',width:120">上次登录时间</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div title="更新EMU固件" style="padding:10px">
+	        <form id="ff" method="post">
+	            <div id="verDiv" style="margin-bottom:20px;color:red">
+	                
+	            </div>
+	            <div style="margin-bottom:20px">
+	                <input class="easyui-textbox" name="acconeId" id="acconeId" style="width:100%" data-options="label:'EMU编号:',required:true">
+	            </div>
+	            <div style="margin-bottom:20px">
+	                <input class="easyui-textbox" id="ver" name="ver" style="width:100%" data-options="label:'版本号',required:true">
+	            </div>
+	        </form>
+	        <div style="text-align:center;padding:5px 0">
+	            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交更新</a>
+	            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+	        </div>
+        </div>
+        <div title="启动或停止系统" style="padding:10px">
+            <form id="gg" method="post">
+                <div id="systembootdiv" style="margin-bottom:20px;color:red">
+                    
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" name="acconeId" id="acconeId" style="width:100%" data-options="label:'EMU编号:',required:true">
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" id="params" value="TA:53,TB:51,TC:48,TD:46" name="params" style="width:100%" data-options="label:'策略参数',required:true" placeholder="例:TA:53,TB:51,TC:48,TD:46">
+                </div>
+            </form>
+            <div style="text-align:center;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitSystemBootStartForm()" style="width:80px">启动系统</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitSystemBootStopForm()" style="width:80px">停止系统</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearSystemBootForm()" style="width:80px">清空</a>
+            </div>
+        </div>
+        <div title="充放电测试指令下发" style="padding:10px">
+            <form id="cdc" method="post">
+                <div id="pcscontroldiv" style="margin-bottom:20px;color:red">
+                    
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" name="acconeId" id="acconeId" style="width:100%" data-options="label:'EMU编号:',required:true">
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" id="p" value="10" name="p" style="width:100%" data-options="label:'功率参数'" placeholder="10">
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" id="essAMStatus" name="essAMStatus" style="width:100%" data-options="label:'0:手动, 1:自动'" placeholder="">
+                    
+                </div>
+                <div style="margin-bottom:20px">
+                                    <input class="easyui-textbox" id="esNo" value="1" name="esNo" style="width:100%" data-options="label:'储能编号'" placeholder="10">
+                                </div>
+            </form>
+            <div style="text-align:center;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="getAMStatus()" style="width:200px">1:获取当前手自动状态</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitProjectConfig()" style="width:200px">2:设置手/自动模式</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitPcscontrolForm()" style="width:80px">3:充放电</a>
+            </div>
+            <div style="text-align:center;padding:5px 0">
+                
+            </div>
+            <div style="text-align:center;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitGetbatdataForm()" style="width:200px">获取电池最新详细数据指令下发</a>
+            </div>
+        </div>
+        <div title="固件上传" style="padding:10px">
+            <form id="ee" method="post" enctype="multipart/form-data">
+                <div id="urlDiv" style="margin-bottom:20px;color:red">
+                    
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" name="acconeId" id="acconeId" style="width:100%" data-options="label:'EMU编号:',required:true">
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" id="ver" name="ver" style="width:100%" data-options="label:'版本号',required:true">
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-filebox" id="file" name="file" style="width:100%" data-options="label:'选择文件上传',required:true">
+                </div>
+            </form>
+            <div style="text-align:center;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitUploadForm()" style="width:80px">提交更新</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearUploadForm()" style="width:80px">清空</a>
+            </div>
+        </div>
+        <div title="风机控制" style="padding:10px">
+            <form id="fjkz" method="post">
+                <div style="margin-bottom:20px">
+                                    <input class="easyui-textbox" name="fjkzacconeId" id="fjkzacconeId" style="width:100%" data-options="label:'EMU编号:',required:true">
+                                </div>
+                                <div style="margin-bottom:20px">
+                                    <input class="easyui-textbox" id="fjkztextCmd" value="" name="fjkztextCmd" style="width:100%" data-options="label:'指令',required:true">
+                                </div>
+                                <div style="margin-bottom:20px">
+                                    <div>命令字 "commandType":26</div>
+                                    <div>指令：0关机，1开机</div>
+                                </div>
+            </form>
+            <div style="text-align:center;padding:5px 0">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitSendConnCmdFormFj()" style="width:80px">下发指令</a>
+                        </div>
+                        <div>
+                                    执行结果：
+                                        <div name="sendTextdiv2" id="sendTextdiv2" style="color:red"></div>
+                                    </div>
+        </div>
+        <div title="调试命令下发" style="padding:10px">
+            <form id="stc" method="post">
+                <div id="sendtextcmddiv" style="margin-bottom:20px;color:red">
+                    
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" name="acconeId" id="acconeId" style="width:100%" data-options="label:'EMU编号:',required:true">
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" id="textCmd" value="" name="textCmd" style="width:100%" data-options="label:'指令',required:true">
+                </div>
+                <div style="margin-bottom:20px">
+                <span>
+                        下发格式自定义(例如)：00 01  21 03</br></br>
+                        </span>
+                        <span>
+                        实际下发内容：  {"head":126,"contentLength":40,"timestamp":"B+UBDA8PFA==","content":"e3NlbmRObzoiWFhYWFgiLGRlQnVnOiIwMCAwMSAgMjEgMDMifQ==","commandType":8888,"crc":0,"msgbytes":""}</br></br>
+                        </span>
+                        <span>
+                        "commandType":8888    命令字代表通讯口调试 </br></br>
+                        </span>
+                        <span>
+                        "content":"e3NlbmRObzoiWFhYWFgiLGRlQnVnOiIwMCAwMSAgMjEgMDMifQ==" </br></br>
+                         </span>
+                         <span>
+                        content内容base64加密，解密后是："content"："{sendNo:"XXXXX",deBug:"00 01  21 03"}"
+                         </span>
+                </div>
+            </form>
+            <div style="text-align:center;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitSendConnCmdForm()" style="width:80px">下发指令</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearSendTextCmdForm()" style="width:80px">清空</a>
+            </div>
+            <div>
+            执行结果：
+                <div name="sendTextdiv" id="sendTextdiv" style="color:red"></div>
+            </div>
+        </div>
+        <div title="亨通岸电桩指令下发" style="padding:10px">
+                    <form id="htad" method="post">
+
+                        <div style="margin-bottom:20px">
+                            <input class="easyui-textbox" name="htacconeId" id="htacconeId" style="width:100%" data-options="label:'EMU编号:',required:true">
+                        </div>
+                        <div style="margin-bottom:20px">
+                            <input class="easyui-textbox" id="htdeviceId" value="1" name="htdeviceId" style="width:100%" data-options="label:'deviceId',required:true">
+                        </div>
+                        <div style="margin-bottom:20px">
+                        <span> </span>
+                        </div>
+                    </form>
+                    <div style="text-align:center;padding:5px 0">
+                        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitSendHengtongForm(13)" style="width:80px">开始用电</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitSendHengtongForm(14)" style="width:80px">结束用电</a>
+                    </div>
+                    <div>
+                    EMU响应内容：
+                        <div name="sendTextdiv3" id="sendTextdiv3" style="color:red"></div>
+                        <br/>
+                        <br/>
+                        <br/>
+                    二次返回结果（给汇海的）：
+                        <div name="sendTextdiv4" id="sendTextdiv4" style="color:red"></div>
+
+                    </div>
+                </div>
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function(){
+	    $('#tt').tabs({
+            plain: $('#plain').is(':checked'),
+            narrow: $('#narrow').is(':checked'),
+            pill: $('#pill').is(':checked'),
+            justified: $('#justified').is(':checked')
+        })
+        
+        $('#ff').form({
+            // url:'${ctxPath}/accone/updatefirmware',
+            url:'http://localhost:3336/accone/uploadfirmware',
+            success:function(data){
+                //var jsonData = eval("("+data+")");
+                if (jsonData.success) {
+                    $.messager.alert("提示", "更新提交成功，请稍等");
+                } else {
+                    $.messager.alert("提示", "更新提交失败");
+                }
+            }
+        });
+        
+        $('#ee').form({
+            //url:'${ctxPath}/accone/uploadfirmware',
+            url:'http://120.24.234.128:3336/accone/updatefirmware',
+            success:function(data){
+                // var jsonData = eval("("+data+")");
+                if (data.success) {
+                    $.messager.alert("提示", "上传成功");
+                    $('#urlDiv').html("下载地址：" + 'http://www.jz-energy.cn/accone/update/firmwares/' + $('#ee #acconeId').textbox('getValue') + '/update-v' + $('#ee #ver').textbox('getValue') + ".rbl");
+                } else {
+                    $.messager.alert("提示", "上传失败");
+                }
+            }
+        });
+	});
+	
+	function submitForm(){
+        $('#ff').form('submit');
+        sendMessage($('#ff #acconeId').textbox('getValue'));
+    }
+    function clearForm(){
+        $('#ff').form('clear');
+    }
+    
+    function submitUploadForm(){
+        $('#ee').form('submit');
+    }
+    function clearUploadForm(){
+        $('#ee').form('clear');
+    }
+    function clearSendTextCmdForm(){
+        $('#stc').form('clear');
+        $('#sendTextdiv').html(" ");
+        $('#sendTextdiv2').html(" ");
+        $('#sendTextdiv3').html(" ");
+
+    }
+    function submitSystemBootStartForm(){
+        var systemBootBean = {};
+        systemBootBean.acconeId = $('#gg #acconeId').textbox('getValue');
+        var paramsTemp = '{' + $('#gg #params').textbox('getValue') + '}';
+        systemBootBean.params = eval("("+paramsTemp+")");
+        $.ajax({
+            type: "POST",
+            url: '${ctxPath}/accone/systemboot/start',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(systemBootBean),
+            dataType: "json",
+            success: function(jsonData){
+                //var jsonData = eval("("+data+")");
+                if (jsonData.successed) {
+                    $.messager.alert("提示", "系统启动提交成功，请稍等");
+                } else {
+                    $.messager.alert("提示", "系统启动提交失败," + jsonData.errorCode + ":" + jsonData.errorMsg);
+                }
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+        sendMessage($('#gg #acconeId').textbox('getValue'));
+    }
+    
+    function submitSystemBootStopForm(){
+        var systemBootBean = {};
+        systemBootBean.acconeId = $('#gg #acconeId').textbox('getValue');
+        $.ajax({
+            type: "POST",
+            url: '${ctxPath}/accone/systemboot/stop',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(systemBootBean),
+            dataType: "json",
+            success: function(jsonData){
+                //var jsonData = eval("("+data+")");
+                if (jsonData.successed) {
+                    $.messager.alert("提示", "系统停止提交成功，请稍等");
+                } else {
+                    $.messager.alert("提示", "系统停止提交失败," + jsonData.errorCode + ":" + jsonData.errorMsg);
+                }
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+        sendMessage($('#gg #acconeId').textbox('getValue'));
+    }
+    
+    function clearSystemBootForm(){
+        $('#gg').form('clear');
+    }
+    
+    function submitPcscontrolForm(){
+        var chargeDisCahrgeBean = {};
+        chargeDisCahrgeBean.acconeId = $('#cdc #acconeId').textbox('getValue');
+        chargeDisCahrgeBean.p = $('#cdc #p').textbox('getValue');
+        chargeDisCahrgeBean.esNo=$('#cdc #esNo').textbox('getValue');
+        $.ajax({
+            type: "POST",
+            url: '${ctxPath}/accone/pcscontrol/process',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(chargeDisCahrgeBean),
+            dataType: "json",
+            success: function(jsonData){
+                //var jsonData = eval("("+data+")");
+                if (jsonData.successed) {
+                    $.messager.alert("提示", "充放电提交成功，请稍等");
+                } else {
+                    $.messager.alert("提示", "充放电提交失败," + jsonData.errorCode + ":" + jsonData.errorMsg);
+                }
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+        sendMessage($('#cdc #acconeId').textbox('getValue'));
+    }
+    
+    function submitGetbatdataForm(){
+        var getBatDataBean = {};
+        getBatDataBean.acconeId = $('#cdc #acconeId').textbox('getValue');
+        $.ajax({
+            type: "POST",
+            url: '${ctxPath}/accone/getbatdata',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(getBatDataBean),
+            dataType: "json",
+            success: function(jsonData){
+                //var jsonData = eval("("+data+")");
+                if (jsonData.successed) {
+                    $.messager.alert("提示", "指令提交成功，请稍等");
+                } else {
+                    $.messager.alert("提示", "指令提交失败," + jsonData.errorCode + ":" + jsonData.errorMsg);
+                }
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+    }
+
+    function submitSendConnCmdFormFj(){
+             var sendTextCmd = {};
+                    sendTextCmd.acconeId = $('#fjkz #fjkzacconeId').textbox('getValue');
+                    sendTextCmd.textCmd = $('#fjkz #fjkztextCmd').textbox('getValue');
+                    if(sendTextCmd.acconeId==null||sendTextCmd.acconeId==""){
+                        $.messager.alert("提示", "连接失败，EMU编号为空！");
+                        return;
+                    }
+                     sendMessage(sendTextCmd.acconeId);
+                     //$.messager.alert("提示", "连接成功，请点击下发按钮！");
+
+                    sendTextCmd.command=26;
+                             $('#sendTextdiv2').html(" ");
+                            $.ajax({
+                                type: "POST",
+                                url: '${ctxPath}/accone/sendtextcmd',
+                                contentType: "application/json; charset=utf-8",
+                                data: JSON.stringify(sendTextCmd),
+                                dataType: "json",
+                                success: function(jsonData){
+                                    //var jsonData = eval("("+data+")");
+                                    if (jsonData.success) {
+                                        $.messager.alert("提示", "指令提交成功，请稍等");
+                                    } else {
+                                        $.messager.alert("提示", "指令提交失败," + jsonData.code + ":" + jsonData.message);
+                                    }
+                                },
+                                error: function (message) {
+                                    output(message);
+                                }
+                            });
+
+
+
+        }
+
+        function submitSendHengtongForm(command){
+
+                     var sendTextCmd = {};
+                            sendTextCmd.acconeId = $('#htad #htacconeId').textbox('getValue');
+                            sendTextCmd.deviceId = $('#htad #htdeviceId').textbox('getValue');
+                            sendTextCmd.command=command;
+                            if(sendTextCmd.acconeId==null||sendTextCmd.acconeId==""){
+                                $.messager.alert("提示", "连接失败，EMU编号为空！");
+                                return;
+                            }
+                             sendMessage(sendTextCmd.acconeId);
+                             //$.messager.alert("提示", "连接成功，请点击下发按钮！");
+                                     $('#sendTextdiv3').html(" ");
+                                     $('#sendTextdiv4').html("");
+                                    $.ajax({
+                                        type: "POST",
+                                        url: '${ctxPath}/accone/sendhengtong',
+                                        contentType: "application/json; charset=utf-8",
+                                        data: JSON.stringify(sendTextCmd),
+                                        dataType: "json",
+                                        success: function(jsonData){
+                                            //var jsonData = eval("("+data+")");
+                                            if (jsonData.success) {
+                                                $.messager.alert("提示", "指令提交成功，请看左下角响应内容");
+                                                 $('#sendTextdiv4').html("" + JSON.stringify(jsonData));
+                                            } else {
+                                                $.messager.alert("提示", "指令提交失败," + jsonData.code + ":" + jsonData.message);
+                                            }
+                                        },
+                                        error: function (message) {
+                                            output(message);
+                                        }
+                                    });
+
+
+
+                }
+
+
+    function submitSendConnCmdForm(){
+         var sendTextCmd = {};
+                sendTextCmd.acconeId = $('#stc #acconeId').textbox('getValue');
+                sendTextCmd.textCmd = $('#stc #textCmd').textbox('getValue');
+                if(sendTextCmd.acconeId==null||sendTextCmd.acconeId==""){
+                    $.messager.alert("提示", "连接失败，EMU编号为空！");
+                    return;
+                }
+                 sendMessage(sendTextCmd.acconeId);
+                 //$.messager.alert("提示", "连接成功，请点击下发按钮！");
+                 submitSendTextCmdForm();
+    }
+    
+    function submitSendTextCmdForm(){
+        var sendTextCmd = {};
+        sendTextCmd.acconeId = $('#stc #acconeId').textbox('getValue');
+        sendTextCmd.textCmd = $('#stc #textCmd').textbox('getValue');
+        sendTextCmd.command=8888;
+         $('#sendTextdiv').html(" ");
+        $.ajax({
+            type: "POST",
+            url: '${ctxPath}/accone/sendtextcmd',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(sendTextCmd),
+            dataType: "json",
+            success: function(jsonData){
+                //var jsonData = eval("("+data+")");
+                if (jsonData.success) {
+                    $.messager.alert("提示", "指令提交成功，请稍等");
+                } else {
+                    $.messager.alert("提示", "指令提交失败," + jsonData.code + ":" + jsonData.message);
+                }
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+    }
+    
+    function submitProjectConfig(){
+        var acconeId = $('#cdc #acconeId').textbox('getValue');
+        var essAMStatus = $('#cdc #essAMStatus').textbox('getValue');
+        if (!acconeId) {
+            $.messager.alert("提示", "EMUID不可为空！");
+        }
+        if (!essAMStatus) {
+            $.messager.alert("提示", "essAMStatus不可为空！");
+        }
+        var projectConfig = {};
+        projectConfig.config = {};
+        projectConfig.config.pcsControlAcconeId = acconeId;
+        projectConfig.essAMStatus = essAMStatus;
+        $.ajax({
+            type: "POST",
+            url: '${ctxPath}/accone/projectconfig/save',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(projectConfig),
+            dataType: "json",
+            success: function(jsonData){
+                //var jsonData = eval("("+data+")");
+                if (jsonData.successed) {
+                    $.messager.alert("提示", "保存 成功");
+                } else {
+                    $.messager.alert("提示", "保存失败," + jsonData.errorCode + ":" + jsonData.errorMsg);
+                }
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+    }
+    
+    function getAMStatus(){
+        var acconeId = $('#cdc #acconeId').textbox('getValue');
+        if (!acconeId) {
+            $.messager.alert("提示", "EMUID不可为空！");
+        }
+        $.ajax({
+            type: "GET",
+            url: '${ctxPath}/accone/projectconfig/get/' + acconeId,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(jsonData){
+                console.log(jsonData)
+                if (jsonData.essAMStatus != null && jsonData.essAMStatus != undefined) {
+                    $('#cdc #essAMStatus').textbox('setValue', jsonData.essAMStatus);
+                } else {
+                    $('#cdc #essAMStatus').textbox('clear');
+                    $.messager.alert("提示", "无相关配置！");
+                }
+                
+            },
+            error: function (message) {
+                output(message);
+            }
+        });
+        sendMessage($('#gg #acconeId').textbox('getValue'));
+    }
+    
+    var socket = io.connect('http://www.jz-energy.cn:9091');
+    //var socket = io.connect('http://localhost:9091');
+        socket.on('connect', function () {
+            output('<span class="connect-msg">Client has connected to the server!</span>');
+            console.log("连接！")
+        });
+        socket.on('updateaccone', function (data) {
+            $('#verDiv').html("当前版本：" + data);
+        });
+        socket.on('systemboot', function (data) {
+            $('#systembootdiv').html("系统状态值：" + JSON.stringify(data));
+        });
+        socket.on('systemstop', function (data) {
+            $('#systembootdiv').html("系统状态值：" + JSON.stringify(data));
+        });
+        socket.on('pcscontrol', function (data) {
+            $('#pcscontroldiv').html("充放电状态值：" + JSON.stringify(data));
+        });
+        socket.on('sendText', function (data) {
+                    console.log("sendText："+JSON.stringify(data));
+                    $('#sendTextdiv').html("" + JSON.stringify(data));
+                     $('#sendTextdiv2').html("" + JSON.stringify(data));
+                     $('#sendTextdiv3').html("" + JSON.stringify(data));
+
+                });
+        socket.on('disconnect', function () {
+            output('<span class="disconnect-msg">The client has disconnected!</span>');
+        });
+        function sendMessage(acconeId) {
+            socket.emit('setconnectioncache', acconeId,function(error,message){
+                console.log(error);
+                console.log(message);
+            });
+        }
+        function output(message) {
+            var currentTime = "<span class='time'>" + moment().format('HH:mm:ss.SSS') + "</span>";
+            var element = $("<div>" + currentTime + " " + message + "</div>");
+            $('#console').prepend(element);
+        }
+    </script>
+    
+    <script type="text/javascript">
+	var updatefirmware = new UpdateFirmware({dg:$('#dg'), datagridurl:"${ctxPath}/accone/updatefirmware/datagridload"});
+	// 当文档载入完毕执行初始化操作
+	$(function(){
+	    updatefirmware.init();
+	})
+	</script>
+</body>
+</html>	
